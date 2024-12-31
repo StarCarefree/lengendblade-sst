@@ -106,7 +106,7 @@ public class SevenSwordSkill {
         ItemStack stack = event.getItemStack();
         CompoundTag tag = stack.getTag();
         if (tag == null)return;
-        if( SlashbladeUtils.getStringNBT(tag,"translationKey").equals("item.legendblade.sevensword")) {
+        if( SlashbladeUtils.getStringNBT(tag,"translationKey").equals("item.legendblade.sevensword") || SlashbladeUtils.getStringNBT(tag, "translationKey").equals("item.slashblade.guhunqu")) {
             if (!stack.getTag().contains("UnLock")) {
                 event.getToolTip().set(0, Component.translatable("se.legendblade.tooltip.sevensowrd.1").append(event.getToolTip().get(0)));
                 event.getToolTip().add(Component.translatable("se.legendblade.tooltip.sevensowrd.2"));
@@ -130,14 +130,19 @@ public class SevenSwordSkill {
         ItemStack stack =event.getBlade();
         a(entity,stack,null);
         final Vec3 _center = entity.position();
+        ItemStack stack1 = entity.getMainHandItem();
+        CompoundTag tag = stack1.getTag();
         if (entity.hasEffect(Legendblade.EffectAbout.MO_DAO.get())){
             List<Entity> _entfound = entity.level().getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(5 * 4 / 2d), a -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
               for (Entity entity2 : _entfound){
                 if (entity2 instanceof LivingEntity livingEntity){
                     if (entity2!=entity){
                         livingEntity.invulnerableTime = 0;
-                        entity2.hurt(new DamageSource(entity2.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC), entity), (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE)*1);
-
+                        if (SlashbladeUtils.getStringNBT(tag, "translationKey").equals("item.slashblade.guhunqu")) {
+                            entity2.hurt(new DamageSource(entity2.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC), entity), (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE)*2);
+                        } else {
+                            entity2.hurt(new DamageSource(entity2.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC), entity), (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1);
+                        }
                     }
                 }
                 if (entity2 instanceof SevenSkillField sevenSkillField){
@@ -160,7 +165,11 @@ public class SevenSwordSkill {
 
 
                         drive.setPos(_center.x, _center.y, _center.z);
-                        drive.setDamage(1.5f);
+                        if (SlashbladeUtils.getStringNBT(tag, "translationKey").equals("item.slashblade.guhunqu")) {
+                            drive.setDamage(3f);
+                        } else {
+                            drive.setDamage(1.5f);
+                        }
                         drive.setSpeed(1.0f+i*0.2f);
                         Vec3 directionVec = sevenSkillField.position().subtract(entity.position()).normalize();
 
@@ -178,6 +187,8 @@ public class SevenSwordSkill {
         public static void a(LivingEntity entity,ItemStack stack,LivingEntity tartget2) {
             if (stack.getTag()==null)return;
             if (!stack.getTag().getBoolean("UnLock")) return;
+            ItemStack stack1 = entity.getMainHandItem();
+            CompoundTag tag = stack1.getTag();
             if (SlashbladeUtils.hasSpecialEffect(stack, (LBSpecialEffectsRegistry.FragmentedEdge.getId()).toString())) {
                 if (entity.hasEffect(Legendblade.EffectAbout.MO_DAO.get()))return;
                 LivingEntity target = EntityPointer.raycastForEntityTo(entity.level(), entity, 16, true);
@@ -202,7 +213,11 @@ public class SevenSwordSkill {
 
 
                 drive.setPos(pos.x, pos.y, pos.z);
-                drive.setDamage(1f);
+                if (SlashbladeUtils.getStringNBT(tag, "translationKey").equals("item.slashblade.guhunqu")) {
+                    drive.setDamage(1.5f);
+                } else {
+                    drive.setDamage(1f);
+                }
                 drive.setSpeed(1.2f);
                 Vec3 directionVec = target.position().subtract(entity.position()).normalize();
 
